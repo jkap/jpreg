@@ -13,7 +13,7 @@ options = {
 }
 
 parser = OptionParser.new do |opts|
-  opts.version = "0.2"
+  opts.version = "0.3"
   opts.banner = "Usage: jpreg [-h] [-o /path/to/output] [-q] [-v] FILE"
 
   opts.separator ""

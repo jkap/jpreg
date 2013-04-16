@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name              = 'jpreg'
-  s.version           = '0.2'
+  s.version           = '0.3'
   s.date              = '2013-04-16'
   # s.rubyforge_project = 'jpreg'
 
@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   ## a custom homepage, consider using your GitHub URL or the like.
   s.authors  = ["Josh Kaplan"]
   s.email    = 'joshbrentkaplan@gmail.com'
-  s.homepage = 'http://www.josh-kaplan.com'
+  s.homepage = 'https://github.com/jkap/jpreg'
 
   # ## This gets added to the $LOAD_PATH so that 'lib/NAME.rb' can be required as
   # ## require 'NAME.rb' or'/lib/NAME/file.rb' can be as require 'NAME/file.rb'
