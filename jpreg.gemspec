@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   ## If your rubyforge_project name is different, then edit it and comment out
   ## the sub! line in the Rakefile
   s.name              = 'jpreg'
-  s.version           = '0.4'
+  s.version           = '0.5'
   s.date              = '2013-04-16'
   # s.rubyforge_project = 'jpreg'
 

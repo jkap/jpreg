@@ -9,11 +9,14 @@ options = {
   :output   => "#{ENV['HOME']}/Desktop/jpreg-#{timestamp}.jpg",
   :quiet    => false,
   :times    => 5,
-  :quality  => 40
+  :quality  => 40,
+  :resize   => false,
+  :resize_amount => 50,
+  :range    => 5
 }
 
 parser = OptionParser.new do |opts|
-  opts.version = "0.4"
+  opts.version = "0.5"
   opts.banner = "Usage: jpreg [-h] [-o /path/to/output] [-q] [-v] FILE"
 
   opts.separator ""
@@ -43,6 +46,15 @@ parser = OptionParser.new do |opts|
   opts.on("-h", "--help", "Show this message") do
     puts opts
     exit
+  end
+
+  opts.on("-r", "--resize 50", "Resize, then de-resize") do |resize_amount|
+    options[:resize] = true
+    options[:resize_amount] = resize_amount unless resize_amount.to_i == 0
+  end
+
+  opts.on("--range 5", "Range of quality deviation") do |range|
+    options[:range] = range.to_i
   end
 end
 
@@ -79,14 +91,42 @@ end
 
 options[:times].to_i.times do
 
+  if options[:resize]
+    cmd  = ["convert"]
+    cmd << "-resize" << "#{options[:resize_amount]}%"
+    cmd << File.join(path, "#{modified_base_name}.tiff")
+    cmd << File.join(path, "#{modified_base_name}2.tiff")
+
+    unless system(*cmd)
+      puts "Something broke when we were compressing your jpeg. Shit."
+      exit(1)
+    end
+
+    FileUtils.mv File.join(path, "#{modified_base_name}2.tiff"), File.join(path, "#{modified_base_name}.tiff")
+  end
+
   cmd  = ["convert"]
-  cmd << "-quality" << (options[:quality].to_i + (-5..5).to_a.shuffle.first).to_s
+  cmd << "-quality" << (options[:quality].to_i + (-options[:range]..options[:range]).to_a.shuffle.first).to_s
   cmd << File.join(path, "#{modified_base_name}.tiff")
   cmd << File.join(path, "#{modified_base_name}.jpg")
 
   unless system(*cmd)
     puts "Something broke when we were compressing your jpeg. Shit."
     exit(1)
+  end
+
+  if options[:resize]
+    cmd  = ["convert"]
+    cmd << "-resize" << "#{100.0 / options[:resize_amount].to_f * 100}%"
+    cmd << File.join(path, "#{modified_base_name}.jpg")
+    cmd << File.join(path, "#{modified_base_name}2.jpg")
+
+    unless system(*cmd)
+      puts "Something broke when we were compressing your jpeg. Shit."
+      exit(1)
+    end
+
+    FileUtils.mv File.join(path, "#{modified_base_name}2.jpg"), File.join(path, "#{modified_base_name}.jpg")
   end
 
   cmd  = ["convert"]
