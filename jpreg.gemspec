@@ -58,7 +58,9 @@ Gem::Specification.new do |s|
   ## THE MANIFEST COMMENTS, they are used as delimiters by the task.
   # = MANIFEST =
   s.files = %w[
-
+    Rakefile
+    bin/jpreg
+    jpreg.gemspec
   ]
   # = MANIFEST =
 
