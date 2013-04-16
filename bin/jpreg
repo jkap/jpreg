@@ -13,7 +13,7 @@ options = {
 }
 
 parser = OptionParser.new do |opts|
-  opts.version = "0.3"
+  opts.version = "0.4"
   opts.banner = "Usage: jpreg [-h] [-o /path/to/output] [-q] [-v] FILE"
 
   opts.separator ""
@@ -80,7 +80,7 @@ end
 options[:times].to_i.times do
 
   cmd  = ["convert"]
-  cmd << "-quality" << options[:quality].to_s
+  cmd << "-quality" << (options[:quality].to_i + (-5..5).to_a.shuffle.first).to_s
   cmd << File.join(path, "#{modified_base_name}.tiff")
   cmd << File.join(path, "#{modified_base_name}.jpg")
 
