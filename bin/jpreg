@@ -1,0 +1,110 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'fileutils'
+
+timestamp = Time.now.strftime(fmt='%F_%Hh-%Mm-%Ss')
+
+options = {
+  :output   => "#{ENV['HOME']}/Desktop/jpreg-#{timestamp}.jpg",
+  :quiet    => false,
+  :times    => 5,
+  :quality  => 40
+}
+
+parser = OptionParser.new do |opts|
+  opts.version = "0.0.1"
+  opts.banner = "Usage: jpreg [-h] [-o /path/to/output] [-q] [-v] FILE"
+
+  opts.separator ""
+  opts.separator "  FILES can be listed out, like `file1.jpg file2.jpg`, or it"
+  opts.separator "  can be a normal shell glob, like `*.jpg`."
+
+  opts.separator ""
+  opts.separator "Options:"
+
+  opts.on("-o", "--output /path/to/output", "Set the animation's output directory") do |out|
+    options[:output] = out
+  end
+
+  opts.on("-v", "--version", "Shows the program version") do
+    puts "jpreg " + opts.version
+    exit
+  end
+
+  opts.on("-t", "--times 5", "Sets the number of times to run convert") do |times|
+    options[:times] = times
+  end
+
+  opts.on("-l", "--level 40", "Sets the compression level") do |level|
+    options[:quality] = level
+  end
+
+  opts.on("-q", "--quiet", "Don't print status messages to stdout") do
+    options[:quiet] = true
+  end
+
+  opts.on("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+end
+
+parser.parse!
+file = ARGV.first
+
+unless system("which convert 2>&1 > /dev/null")
+  puts "You need to install ImageMagick first.\n\n"
+  puts "If you're on a Mac, this should be as easy as:"
+  puts "  brew install imagemagick"
+  exit(1)
+end
+
+unless file && file.size != 0
+  puts parser.help
+  exit(1)
+end
+
+file = File.expand_path(file)
+
+base_name = File.basename(file, ".*")
+extension = File.extname(file)
+path = File.dirname(file)
+modified_base_name = "#{base_name}2"
+
+cmd = ["convert"]
+cmd << file
+cmd << File.join(path, "#{modified_base_name}.tiff")
+
+unless system(*cmd)
+  puts "Something broke when we were compressing your jpeg. Shit."
+  exit(1)
+end
+
+options[:times].to_i.times do
+
+  cmd  = ["convert"]
+  cmd << "-quality" << options[:quality].to_s
+  cmd << File.join(path, "#{modified_base_name}.tiff")
+  cmd << File.join(path, "#{modified_base_name}.jpg")
+
+  unless system(*cmd)
+    puts "Something broke when we were compressing your jpeg. Shit."
+    exit(1)
+  end
+
+  cmd  = ["convert"]
+  cmd << File.join(path, "#{modified_base_name}.jpg")
+  cmd << File.join(path, "#{modified_base_name}.tiff")
+
+  unless system(*cmd)
+    puts "Something broke when we were compressing your jpeg. Shit."
+    exit(1)
+  end
+
+end
+
+FileUtils.mv File.join(path, "#{modified_base_name}.jpg"), options[:output]
+File.delete File.join(path, "#{modified_base_name}.tiff")
+
+puts "You now have a handsome jpeg at #{options[:output]}"
