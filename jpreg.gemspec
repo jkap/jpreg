@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   ## the sub! line in the Rakefile
   s.name              = 'jpreg'
   s.version           = '0.5'
-  s.date              = '2013-04-16'
+  s.date              = '2013-04-18'
   # s.rubyforge_project = 'jpreg'
 
   ## Make sure your summary is short. The description may be as long
